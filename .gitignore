@@ -1,0 +1,9 @@
+# Binarios y objetos
+bin/
+src/**/*.o
+*.o
+
+# Archivos temporales de editor
+.vscode/
+.idea/
+*.swp
