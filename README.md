@@ -28,31 +28,31 @@ Los algoritmos de planificacion soportados son:
 
 ## Estructura del Proyecto
 ```
-/Proyecto_Planificador_OS
-├── Makefile
-├── README.md
-├── /src
-│   ├── /client
-│   │   ├── client.c
-│   │   └── client.h
+/Proyecto1-IC6600
+├── Makefile     # Esencial para compilar el cliente y el servidor.
+├── README.md    # Instrucciones de compilación y ejecución
+├── /src         # Todo el código fuente se encuentra en esta carpeta
+│   ├── /client        
+│   │   ├── client.c        # Lógica principal del cliente (modos manual y automático)
+│   │   └── client.h        # Cabeceras del cliente
 │   ├── /server
-│   │   ├── server.c
-│   │   ├── server.h
-│   │   ├── job_scheduler.c
-│   │   ├── cpu_scheduler.c
-│   │   └── schedulers.h
-│   └── /common
-│       ├── pcb.h
-│       ├── queue.c
-│       ├── queue.h
-│       ├── sockets.c
-│       ├── sockets.h
-│       ├── ui.c
-│       └── ui.h
-├── /data
-│   └── procesos.txt
-├── /bin
-└── /docs
+│   │   ├── server.c        # Inicialización del servidor y selección del algoritmo
+│   │   ├── server.h        # Cabeceras del servidor
+│   │   ├── job_scheduler.c # Hilo que recibe mensajes del socket, asigna PID y encola
+│   │   ├── cpu_scheduler.c # Hilo que despacha procesos según FIFO, SJF, HPF o RR
+│   │   └── schedulers.h    # Cabeceras para los schedulers.
+│   └── /common     # Código que usarán tanto el cliente como el servidor
+│       ├── pcb.h            # Definición del Process Control Block (PCB)
+│       ├── queue.c         # Implementación de la lista/cola para el estado Ready
+│       ├── queue.h         # Cabeceras para la cola del Ready.
+│       ├── sockets.c       # Lógica de comunicación por sockets
+│       ├── sockets.h       # Cabeceras para los sockets.
+│       ├── ui.c            # Herramientas y/o útiles para la Interfaz de Usuario
+│       └── ui.h            # Cabeceras para UI.
+├── /data         # Archivos de entrada.
+│   └── procesos.txt        # Archivo de texto de prueba para el modo manual del cliente
+├── /bin         # Ejecutables principales del proyecto.
+└── /docs        # Documentación del proyecto.
     └── Documentacion.pdf
 ```
 
