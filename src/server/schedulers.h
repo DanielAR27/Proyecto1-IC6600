@@ -11,7 +11,27 @@ typedef struct {
     queue_t *ready_queue;  /* Puntero a la cola compartida de procesos listos. */
     int scheduling_algorithm; /* (Opcional por ahora) Tipo de algoritmo seleccionado. */
     int quantum;           /* (Opcional por ahora) Valor del quantum para Round Robin. */
+    struct metrics_t *metrics; /* Estructura compartida para metricas de ejecucion. */
 } scheduler_args_t;
+
+typedef struct metrics_node {
+    pcb_t pcb;
+    struct metrics_node *next;
+} metrics_node_t;
+
+typedef struct metrics_t {
+    metrics_node_t *head;
+    metrics_node_t *tail;
+    long idle_half_ticks; /* cada tick equivale a 0.5 segundos de CPU ocioso */
+    int total_completed;
+    pthread_mutex_t mutex;
+} metrics_t;
+
+void metrics_init(metrics_t *m);
+void metrics_record_completion(metrics_t *m, pcb_t *pcb);
+double metrics_get_idle(metrics_t *m);
+void metrics_add_idle(metrics_t *m, long half_ticks);
+metrics_node_t *metrics_get_list(metrics_t *m);
 
 /* Función principal del hilo JOB Scheduler.
  Se encarga de aceptar conexiones entrantes, recibir los PCB enviados por 

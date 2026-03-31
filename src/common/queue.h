@@ -32,6 +32,15 @@ void queue_enqueue(queue_t *q, pcb_t process);
  Retorna 'true' si la operación fue exitosa, o 'false' si la cola está vacía. */
 bool queue_dequeue(queue_t *q, pcb_t *process);
 
+/* Extrae el proceso con menor tiempo restante de ejecucion. */
+bool queue_dequeue_shortest(queue_t *q, pcb_t *process);
+
+/* Extrae el proceso con mayor prioridad (valor mas alto). */
+bool queue_dequeue_highest_priority(queue_t *q, pcb_t *process);
+
+/* Imprime en consola el estado actual de la cola Ready (solo lectura). */
+void queue_print(queue_t *q);
+
 /* Libera los recursos de sincronización asociados a la cola. */
 void queue_destroy(queue_t *q);
 
