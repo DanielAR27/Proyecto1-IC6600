@@ -8,6 +8,7 @@
 #include <pthread.h>
 #include <unistd.h>
 #include <signal.h>
+#include <time.h>
 
 #define SERVER_PORT 8080
 
@@ -140,11 +141,6 @@ int main(int argc, char *argv[]) {
     /* 6. Secuencia de apagado y volcado de logs */
     print_info("Apagando schedulers y volcando el log de resultados...");
     
-    /* NOTA IMPORTANTE: 
-     En este punto se debe implementar la lógica para cancelar los hilos,
-     cerrar el socket (close(server_fd)), destruir la cola (queue_destroy)
-     e imprimir las tablas de TAT y WT como indica la especificacion. */
-
     /* Señal de parada al hilo de consola y espera de su finalización */
     server_running = 0;
 
@@ -168,24 +164,64 @@ int main(int argc, char *argv[]) {
     printf("\n===== RESUMEN DE EJECUCION =====\n");
     printf("Procesos completados: %d\n", total);
     printf("Tiempo CPU ocioso (s): %.1f\n", idle_seconds);
-    printf("\nPID | Burst | Llegada | Fin | TAT | WT\n");
-    printf("-----------------------------------------\n");
+    printf("\nPID | Burst | Llegada (Hora) |   Fin (Hora)   | TAT | WT\n");
+    printf("-----------------------------------------------------------\n");
 
+    /* Se encuentra el tiempo de llegada mas temprano (Segundo 0) */
+    long base_time = 0;
+    if (head != NULL) {
+        base_time = head->pcb.time_arrival;
+        metrics_node_t *temp_cur = head->next;
+        while (temp_cur != NULL) {
+            /* En caso de que se ordenaran distinto al finalizar (ej. SJF), 
+               se busca el menor tiempo de llegada absoluto. Se obtiene el
+               verdadero primer tiempo de llegada*/
+            if (temp_cur->pcb.time_arrival < base_time) {
+                base_time = temp_cur->pcb.time_arrival;
+            }
+            temp_cur = temp_cur->next;
+        }
+    }
+
+    /* Imprimir la tabla usando tiempos relativos y liberar memoria */
     double sum_wt = 0.0;
     metrics_node_t *cur = head;
     while (cur != NULL) {
+        /* Los cálculos de TAT y WT usan los tiempos reales para precisión */
         long tat = cur->pcb.time_completion - cur->pcb.time_arrival;
         long wt = tat - cur->pcb.burst;
         if (wt < 0) wt = 0;
         sum_wt += wt;
-        printf("%3d | %5d | %7ld | %3ld | %3ld | %3ld\n",
+        
+        /* Tiempos relativos para mostrar en pantalla */
+        long rel_arrival = cur->pcb.time_arrival - base_time;
+        long rel_completion = cur->pcb.time_completion - base_time;
+
+        /* Toca convertir los tiempos "epoch" de C a formato reloj (HH:MM:SS) */
+        char arr_str[15], comp_str[15];
+        struct tm *tm_info;
+
+        /* Se extrae y formatea la hora de llegada */
+        tm_info = localtime(&cur->pcb.time_arrival);
+        strftime(arr_str, sizeof(arr_str), "%H:%M:%S", tm_info);
+
+        /* Se extrae y formatea la hora de finalización */
+        tm_info = localtime(&cur->pcb.time_completion);
+        strftime(comp_str, sizeof(comp_str), "%H:%M:%S", tm_info);
+
+        /* Se imprime combinando tu idea: relativo (absoluto) */
+        printf("%3d | %5d | %3ld (%s) | %3ld (%s) | %3ld | %3ld\n",
                cur->pcb.pid,
                cur->pcb.burst,
-               cur->pcb.time_arrival,
-               cur->pcb.time_completion,
+               rel_arrival, arr_str,
+               rel_completion, comp_str,
                tat,
                wt);
+               
+        /* Liberación de memoria */
+        metrics_node_t *temp = cur; 
         cur = cur->next;
+        free(temp);
     }
 
     double avg_wt = (total > 0) ? (sum_wt / total) : 0.0;

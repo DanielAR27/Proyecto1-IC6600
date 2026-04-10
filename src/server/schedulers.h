@@ -22,7 +22,7 @@ typedef struct metrics_node {
 typedef struct metrics_t {
     metrics_node_t *head;
     metrics_node_t *tail;
-    long idle_half_ticks; /* cada tick equivale a 0.5 segundos de CPU ocioso */
+    long idle_time_ms; /* Tiempo ocioso acumulado en milisegundos*/
     int total_completed;
     pthread_mutex_t mutex;
 } metrics_t;
@@ -30,7 +30,7 @@ typedef struct metrics_t {
 void metrics_init(metrics_t *m);
 void metrics_record_completion(metrics_t *m, pcb_t *pcb);
 double metrics_get_idle(metrics_t *m);
-void metrics_add_idle(metrics_t *m, long half_ticks);
+void metrics_add_idle(metrics_t *m, long time_ms);
 metrics_node_t *metrics_get_list(metrics_t *m);
 
 /* Función principal del hilo JOB Scheduler.

@@ -30,7 +30,7 @@ void *cpu_scheduler_thread(void *arg) {
 
         if (!has_process) {
             usleep(500000);
-            metrics_add_idle(args->metrics, 1); /* 0.5s -> sumamos 1/2; usamos entero de segundos acumulando cada tick */
+            metrics_add_idle(args->metrics, 500); /* Se suman 500 ms de inactividad */
             continue;
         }
 
@@ -112,7 +112,7 @@ void *cpu_scheduler_thread(void *arg) {
 void metrics_init(metrics_t *m) {
     m->head = NULL;
     m->tail = NULL;
-    m->idle_half_ticks = 0;
+    m->idle_time_ms = 0;
     m->total_completed = 0;
     pthread_mutex_init(&m->mutex, NULL);
 }
@@ -137,14 +137,14 @@ void metrics_record_completion(metrics_t *m, pcb_t *pcb) {
 
 double metrics_get_idle(metrics_t *m) {
     pthread_mutex_lock(&m->mutex);
-    long v = m->idle_half_ticks;
+    long v = m->idle_time_ms;
     pthread_mutex_unlock(&m->mutex);
-    return v * 0.5; /* segundos */
+    return v / 1000.0; /* Convierte los milisegundos a segundos */
 }
 
-void metrics_add_idle(metrics_t *m, long half_ticks) {
+void metrics_add_idle(metrics_t *m, long time_ms) {
     pthread_mutex_lock(&m->mutex);
-    m->idle_half_ticks += half_ticks;
+    m->idle_time_ms += time_ms;
     pthread_mutex_unlock(&m->mutex);
 }
 

@@ -7,10 +7,11 @@
 
 ## Integrantes
 
-| Nombre              | Carnet      |
-|---------------------|-------------|
-| Daniel Aleman Ruiz  | 2023051957  |
-
+| Nombre                      | Carnet     |
+|-----------------------------|------------|
+| Daniel Aleman Ruiz          | 2023051957 |
+| Joseph Arrieta Mora         | 2023020875 |
+| Sebastián Rodríguez Sánchez | 2023020875 |
 ---
 
 ## Descripcion General
@@ -163,9 +164,27 @@ En otra terminal, iniciar el cliente en modo automatico:
 ## Salida del Servidor al Apagar
 
 Al presionar `Ctrl+C` en el servidor, se despliega un resumen con:
-
 - Cantidad total de procesos ejecutados
 - Segundos con CPU ocioso
-- Tabla de Turn Around Time (TAT) por proceso
-- Tabla de Waiting Time (WT) por proceso
+- Tabla con tiempos de llegada, finalización, TAT y WT por proceso
 - Promedio de Waiting Time
+
+```
+===== RESUMEN DE EJECUCION =====
+Procesos completados: 8
+Tiempo CPU ocioso (s): 136.0
+
+PID | Burst | Llegada (Hora) |   Fin (Hora)   | TAT | WT
+-----------------------------------------------------------
+  1 |     1 |   0 (21:52:35) |   1 (21:52:36) |   1 |   0
+  2 |     8 |   2 (21:52:37) |  10 (21:52:45) |   8 |   0
+  3 |     7 |   6 (21:52:41) |  17 (21:52:52) |  11 |   4
+  5 |     7 |  14 (21:52:49) |  24 (21:52:59) |  10 |   3
+  7 |     7 |  21 (21:52:56) |  31 (21:53:06) |  10 |   3
+  6 |     3 |  19 (21:52:54) |  34 (21:53:09) |  15 |  12
+  8 |     6 |  26 (21:53:01) |  40 (21:53:15) |  14 |   8
+  4 |     2 |  10 (21:52:45) |  42 (21:53:17) |  32 |  30
+
+Waiting Time promedio: 7.50 s
+========================================
+```
